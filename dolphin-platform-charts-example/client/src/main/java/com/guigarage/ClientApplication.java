@@ -2,7 +2,6 @@ package com.guigarage;
 
 import com.canoo.dolphin.client.ClientContext;
 import com.canoo.dolphin.client.ClientInitializationException;
-import com.canoo.dolphin.client.ClientShutdownException;
 import com.canoo.dolphin.client.DolphinRuntimeException;
 import com.canoo.dolphin.client.javafx.DolphinPlatformApplication;
 import com.guigarage.view.ChartViewBinder;

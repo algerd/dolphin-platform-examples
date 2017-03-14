@@ -1,21 +1,24 @@
 package com.guigarage.view;
 
 import com.canoo.dolphin.client.ClientContext;
-import com.canoo.dolphin.client.javafx.binding.BidirectionalConverter;
 import com.canoo.dolphin.client.javafx.binding.FXBinder;
 import com.canoo.dolphin.client.javafx.binding.FXWrapper;
 import com.canoo.dolphin.client.javafx.view.AbstractFXMLViewBinder;
 import com.guigarage.Constants;
-import com.guigarage.util.FXWrapper2;
 import com.guigarage.model.ChartData;
 import com.guigarage.model.ChartModel;
+import java.util.function.Function;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ChoiceBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ChartViewBinder extends AbstractFXMLViewBinder<ChartModel> {
 
+    private final Logger LOGGER = LoggerFactory.getLogger(ChartViewBinder.class);
+    
     @FXML
     private ChoiceBox<String> countrySelection;
 
@@ -29,27 +32,24 @@ public class ChartViewBinder extends AbstractFXMLViewBinder<ChartModel> {
     @Override
     protected void init() {
         try {
+            //Configure UI
             XYChart.Series<String, Integer> townCountSeries = new XYChart.Series<>();
             chart.dataProperty().get().add(townCountSeries);
             chart.setLegendVisible(false);
-            townCountSeries.setData(FXWrapper2.wrapList(getModel().getChartData(), new DataConverter()));
-
+            
+            //Bind UI to Dolphin Platform Model
+            FXBinder.bind(townCountSeries.getData()).to(getModel().getChartData(), new DataConverter());
             FXBinder.bind(countrySelection.valueProperty()).bidirectionalTo(getModel().selectedCountryProperty());
             countrySelection.setItems(FXWrapper.wrapList(getModel().getCountries()));
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Can not initialize ChartViewBinder: {}", e);
         }
     }
 
-    private class DataConverter implements BidirectionalConverter<ChartData, XYChart.Data<String, Integer>> {
-
+    private class DataConverter implements Function<ChartData, XYChart.Data<String, Integer>> {
+        
         @Override
-        public ChartData convertBack(XYChart.Data<String, Integer> value) {
-            throw new RuntimeException("DP API ERROR!");
-        }
-
-        @Override
-        public XYChart.Data<String, Integer> convert(ChartData value) {
+        public XYChart.Data<String, Integer> apply(ChartData value) {
             XYChart.Data<String, Integer> data = new XYChart.Data(value.getCategory(), value.getValue());
             value.categoryProperty().onChanged(e -> data.setXValue(value.getCategory()));
             value.valueProperty().onChanged(e -> data.setYValue(value.getValue()));
