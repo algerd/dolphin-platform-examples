@@ -54,6 +54,7 @@ public class ProcessMonitorController {
         SystemInfo si = new SystemInfo();
         os = si.getOperatingSystem();
         memory = si.getHardware().getMemory();
+        sessionExecutor = session.createBackgroundRunner();
         update();
     }
 
