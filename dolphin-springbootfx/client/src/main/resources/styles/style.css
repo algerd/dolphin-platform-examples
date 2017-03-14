@@ -1,0 +1,8 @@
+.todo-item-cell {
+    -fx-background-color: white;
+}
+
+.todo-item-cell .name-text {
+    -fx-font-size: 24px;
+}
+
